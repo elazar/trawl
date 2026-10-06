@@ -144,6 +144,27 @@ floor to Tier 2 but cannot lower this deployment-wide setting.
 For the MITM forward proxy, this setting applies only after the request enters the scraper ladder.
 Set `MITM_ALWAYS_SCRAPE=true` as well when the proxy's direct Tier 0 probe must also be disabled.
 
+## User Prefs
+
+### `USER_PREFS`
+
+**Default:** _(unset)_
+
+A JSON object of Firefox prefs applied to every launched browser, merged after TRAWL's built-in
+launch prefs. Values must be strings, booleans or signed 32-bit integers; arrays, objects,
+`null` and fractional numbers are rejected at startup. Prefs apply at browser launch,
+so restart TRAWL after changing them.
+
+For a deployment that already routes `.onion` traffic through Tor and supplies DNS:
+
+```ini
+USER_PREFS={"network.dns.blockDotOnion":false}
+```
+
+`network.proxy.failover_direct=false` and `network.proxy.socks_remote_dns=true` remain
+enforced even if supplied in `USER_PREFS`. Other preferences can override built-in
+values, including process counts, so configure them with your resource limits in mind.
+
 ## Browser Pool
 
 ### `METRICS_DASHBOARD_ENABLED` and `METRICS_DASHBOARD_TOKEN`

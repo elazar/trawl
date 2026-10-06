@@ -97,6 +97,7 @@ export class BrowserPool {
   private launchTimeoutMs: number
   private healthIntervalMs: number
   private browserFactory?: BrowserFactory
+  private userPrefs: Record<string, string | number | boolean>
   private healthInterval?: ReturnType<typeof setInterval>
   private abandonedLaunches = 0
   private maxAbandonedLaunches: number
@@ -119,6 +120,7 @@ export class BrowserPool {
     healthIntervalMs = 30_000,
     maxAbandonedLaunches = 3,
     browserFactory,
+    userPrefs = {},
   }: {
     poolSize: number
     acquireTimeoutMs?: number
@@ -134,6 +136,7 @@ export class BrowserPool {
     healthIntervalMs?: number
     maxAbandonedLaunches?: number
     browserFactory?: BrowserFactory
+    userPrefs?: Record<string, string | number | boolean>
   }) {
     this.poolSize = poolSize
     this.acquireTimeoutMs = acquireTimeoutMs
@@ -154,6 +157,7 @@ export class BrowserPool {
     this.healthIntervalMs = healthIntervalMs
     this.maxAbandonedLaunches = maxAbandonedLaunches
     this.browserFactory = browserFactory
+    this.userPrefs = userPrefs
   }
 
   // A checkout past its deadline is not slow, it's wedged. The deadline is the caller's
@@ -275,8 +279,6 @@ export class BrowserPool {
       // maps this to firefoxUserPrefs). The earlier `prefs` key was silently
       // ignored, so these settings were dead code in 1.0.0.
       firefox_user_prefs: {
-        // Never bypass a configured proxy when it is unavailable.
-        ...PROXY_SAFETY_FIREFOX_PREFS,
         "dom.ipc.processCount": this.contentProcesses,
         "dom.ipc.processPrelaunch": false,
         "dom.ipc.contentProcessCount": this.contentProcesses,
@@ -314,6 +316,10 @@ export class BrowserPool {
         "extensions.screenshots.system.enabled": false,
         "extensions.screenshots.background.enabled": false,
         "browser.sessionstore.max_tabs_undo": 0,
+
+        ...this.userPrefs,
+        // Keep proxied traffic fail-closed and SOCKS DNS on the proxy.
+        ...PROXY_SAFETY_FIREFOX_PREFS,
       },
     })
 

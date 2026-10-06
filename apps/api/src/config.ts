@@ -71,6 +71,28 @@ export const HEADFUL_POOL_SIZE = nonNegativeInteger(process.env.BROWSER_HEADFUL_
 export const SCRAPE_MIN_TIER = parseScrapeMinTier(process.env.SCRAPE_MIN_TIER)
 export const SCRAPE_PROXY_SELECTION = parseProxySelection(process.env.SCRAPE_PROXY_SELECTION)
 
+// Optional extra Firefox prefs. Invalid values fail startup.
+const parseUserPrefs = (value: string | undefined): Record<string, string | number | boolean> => {
+  if (!value?.trim()) return {}
+  let prefs: unknown
+  try {
+    prefs = JSON.parse(value)
+  } catch {
+    throw new Error("USER_PREFS must contain valid JSON")
+  }
+  if (prefs === null || typeof prefs !== "object" || Array.isArray(prefs)) {
+    throw new Error("USER_PREFS must be a JSON object of pref name to value")
+  }
+  for (const pref of Object.values(prefs)) {
+    if (typeof pref === "string" || typeof pref === "boolean") continue
+    if (typeof pref === "number" && Number.isInteger(pref) && pref >= -2147483648 && pref <= 2147483647) continue
+    throw new Error("USER_PREFS values must be strings, booleans or signed 32-bit integers")
+  }
+  return prefs as Record<string, string | number | boolean>
+}
+
+export const USER_PREFS = parseUserPrefs(process.env.USER_PREFS)
+
 // Optional MCP Streamable HTTP endpoint. Keep this disabled unless the API is
 // reachable only by trusted clients; v1 intentionally has no authentication.
 export const MCP_ENABLED = /^(1|true|yes)$/i.test(process.env.MCP_ENABLED ?? "")

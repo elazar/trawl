@@ -21,6 +21,7 @@ import {
   SESSION_CACHE_DRIVER,
   type SessionCacheDriver,
   STALL_TIMEOUT_MS,
+  USER_PREFS,
 } from "./config"
 import { localProxyCa } from "./proxy/localTrust"
 
@@ -173,6 +174,7 @@ export const initPool = async ({
     stallAfterMs: STALL_TIMEOUT_MS,
     closeTimeoutMs: CLOSE_TIMEOUT_MS,
     launchTimeoutMs: LAUNCH_TIMEOUT_MS,
+    userPrefs: USER_PREFS,
   })
 
   state.headfulPool = undefined
@@ -188,6 +190,7 @@ export const initPool = async ({
       stallAfterMs: STALL_TIMEOUT_MS,
       closeTimeoutMs: CLOSE_TIMEOUT_MS,
       launchTimeoutMs: LAUNCH_TIMEOUT_MS,
+      userPrefs: USER_PREFS,
     })
   }
   // Publish the pool before its first await. Tier 1 can serve immediately and

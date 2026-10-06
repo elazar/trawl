@@ -359,8 +359,8 @@ Tier 4: Residential proxy ──── success ──→ cache + return (15–45
 
 ## Docker images (one GHCR package, two release variants)
 
-| Image tag                          | Built from                     | Runtime                       | Use case                                                   |
-| ---------------------------------- | ------------------------------ | ----------------------------- | ---------------------------------------------------------- |
+| Image tag                          | Built from                     | Runtime                      | Use case                                                   |
+| ---------------------------------- | ------------------------------ | ---------------------------- | ---------------------------------------------------------- |
 | `ghcr.io/germondai/trawl:latest`   | `apps/api/Dockerfile`          | Bun 1.4.2 (modern, AVX2)     | Compact default — Linux fingerprints                       |
 | `ghcr.io/germondai/trawl:baseline` | `apps/api/Dockerfile.baseline` | Bun 1.4.2 baseline (no AVX2) | Older CPUs / older kernels (Synology NAS, J4125, Atom-era) |
 
@@ -417,37 +417,37 @@ commas; larger pools can use the corresponding `*_LIST_FILE` variable. See
 [Configuration → Proxies](./apps/docs/getting-started/configuration.md#proxies)
 for pool and mounted-file examples.
 
-| Variable                         | Default                  | Description                                                                         |
-| -------------------------------- | ------------------------ | ----------------------------------------------------------------------------------- |
-| `BROWSER_POOL_SIZE`              | `1`                      | Warm Camoufox Firefox instances; raise for concurrent browser solves                |
-| `LOG_LEVEL`                      | `info`                   | Operational logs: `error`, `warn`, `info`, `debug`, or `silent`                     |
-| `METRICS_DASHBOARD_ENABLED`      | `false`                  | Explicitly enable the local dashboard without a token; bind its port to `127.0.0.1` |
-| `METRICS_DASHBOARD_TOKEN`        | —                        | Protect the dashboard, JSON endpoint, and live stream with a 32+ character token |
-| `METRICS_DB_PATH`                | `/data/metrics/trawl.sqlite` | SQLite path for local metrics history (mount `/data/metrics` persistently) |
-| `BROWSER_ACQUIRE_TIMEOUT_MS`     | `15000`                  | How long `acquire()` polls for a free browser before HTTP 429 is returned           |
-| `BROWSER_RECYCLE_AFTER_CONTEXTS` | `8`                      | Rolling-replace after this many Tier 3/4 contexts; set `0` to disable               |
-| `BROWSER_MAX_CONTENT_PROCESSES`  | `2`                      | Cap Firefox content processes per browser (`dom.ipc.processCount`); lowers RAM/CPU  |
-| `SCRAPE_MIN_TIER`                | `1`                      | Lowest tier allowed globally (`1` HTTP, `2` cached browser, `3` fresh, `4` residential) |
-| `SESSION_CACHE_DRIVER`           | `redis`                  | Session cache backend: `redis` or single-process `memory`                           |
-| `REDIS_SESSION_TTL_SECONDS`      | `3600`                   | Redis or in-memory session TTL (seconds)                                            |
-| `MEMORY_SESSION_CACHE_MAX_ENTRIES` | `1000`                 | Maximum LRU-bounded entries for the memory driver                                   |
-| `REDIS_URL`                      | —                        | Redis connection string; empty or unset disables the Redis cache                     |
-| `REDIS_CONNECT_TIMEOUT_MS`       | `5000`                   | Maximum time for each Redis connection attempt                                      |
-| `REDIS_RETRY_DELAY_MS`           | `5000`                   | Delay before reconnecting after startup failure; `0` disables retry                 |
-| `SCRAPE_PROXY_SELECTION`         | `failover`               | Pool policy: sticky `failover`, per-request `roundrobin`, or `random`                |
-| `PROXY_URL`                      | —                        | Optional Tier 3 HTTP or SOCKS5 proxy, or comma-separated pool                       |
-| `PROXY_LIST_FILE`                | —                        | File containing one Tier 3 proxy URL per line                                       |
-| `RESIDENTIAL_PROXY_URL`          | —                        | Enables Tier 4 proxy escalation                                                     |
-| `RESIDENTIAL_PROXY_LIST_FILE`    | —                        | File containing one Tier 4 proxy URL per line                                       |
-| `STT_URL`                        | —                        | Local Whisper endpoint for reCAPTCHA (optional)                                     |
-| `PORT`                           | `8191`                   | API listen port                                                                     |
-| `MITM_ENABLED`                   | `false`                  | Enable the challenge-bypassing HTTP/HTTPS proxy                                     |
-| `MITM_PORT`                      | `8192`                   | Forward-proxy listen port                                                           |
-| `MITM_HOST`                      | `0.0.0.0`                | Bind address; `127.0.0.1` for loopback-only                                         |
-| `MITM_CA_DIR`                    | `/data/proxy-ca`         | Persistent root CA certificate and private-key directory                            |
-| `MITM_MAX_TIER`                  | `4`                      | Cap escalation used by the proxy (e.g. `3` to stay off residential)                 |
-| `MITM_ALWAYS_SCRAPE`             | `false`                  | Skip proxy Tier 0; disables the direct media/large-file streaming path               |
-| `MITM_DEBUG`                     | `false`                  | Log one line per proxied request (errors are always logged)                         |
+| Variable                           | Default                      | Description                                                                             |
+| ---------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------- |
+| `BROWSER_POOL_SIZE`                | `1`                          | Warm Camoufox Firefox instances; raise for concurrent browser solves                    |
+| `LOG_LEVEL`                        | `info`                       | Operational logs: `error`, `warn`, `info`, `debug`, or `silent`                         |
+| `METRICS_DASHBOARD_ENABLED`        | `false`                      | Explicitly enable the local dashboard without a token; bind its port to `127.0.0.1`     |
+| `METRICS_DASHBOARD_TOKEN`          | —                            | Protect the dashboard, JSON endpoint, and live stream with a 32+ character token        |
+| `METRICS_DB_PATH`                  | `/data/metrics/trawl.sqlite` | SQLite path for local metrics history (mount `/data/metrics` persistently)              |
+| `BROWSER_ACQUIRE_TIMEOUT_MS`       | `15000`                      | How long `acquire()` polls for a free browser before HTTP 429 is returned               |
+| `BROWSER_RECYCLE_AFTER_CONTEXTS`   | `8`                          | Rolling-replace after this many Tier 3/4 contexts; set `0` to disable                   |
+| `BROWSER_MAX_CONTENT_PROCESSES`    | `2`                          | Cap Firefox content processes per browser (`dom.ipc.processCount`); lowers RAM/CPU      |
+| `SCRAPE_MIN_TIER`                  | `1`                          | Lowest tier allowed globally (`1` HTTP, `2` cached browser, `3` fresh, `4` residential) |
+| `SESSION_CACHE_DRIVER`             | `redis`                      | Session cache backend: `redis` or single-process `memory`                               |
+| `REDIS_SESSION_TTL_SECONDS`        | `3600`                       | Redis or in-memory session TTL (seconds)                                                |
+| `MEMORY_SESSION_CACHE_MAX_ENTRIES` | `1000`                       | Maximum LRU-bounded entries for the memory driver                                       |
+| `REDIS_URL`                        | —                            | Redis connection string; empty or unset disables the Redis cache                        |
+| `REDIS_CONNECT_TIMEOUT_MS`         | `5000`                       | Maximum time for each Redis connection attempt                                          |
+| `REDIS_RETRY_DELAY_MS`             | `5000`                       | Delay before reconnecting after startup failure; `0` disables retry                     |
+| `SCRAPE_PROXY_SELECTION`           | `failover`                   | Pool policy: sticky `failover`, per-request `roundrobin`, or `random`                   |
+| `PROXY_URL`                        | —                            | Optional Tier 3 HTTP or SOCKS5 proxy, or comma-separated pool                           |
+| `PROXY_LIST_FILE`                  | —                            | File containing one Tier 3 proxy URL per line                                           |
+| `RESIDENTIAL_PROXY_URL`            | —                            | Enables Tier 4 proxy escalation                                                         |
+| `RESIDENTIAL_PROXY_LIST_FILE`      | —                            | File containing one Tier 4 proxy URL per line                                           |
+| `STT_URL`                          | —                            | Local Whisper endpoint for reCAPTCHA (optional)                                         |
+| `PORT`                             | `8191`                       | API listen port                                                                         |
+| `MITM_ENABLED`                     | `false`                      | Enable the challenge-bypassing HTTP/HTTPS proxy                                         |
+| `MITM_PORT`                        | `8192`                       | Forward-proxy listen port                                                               |
+| `MITM_HOST`                        | `0.0.0.0`                    | Bind address; `127.0.0.1` for loopback-only                                             |
+| `MITM_CA_DIR`                      | `/data/proxy-ca`             | Persistent root CA certificate and private-key directory                                |
+| `MITM_MAX_TIER`                    | `4`                          | Cap escalation used by the proxy (e.g. `3` to stay off residential)                     |
+| `MITM_ALWAYS_SCRAPE`               | `false`                      | Skip proxy Tier 0; disables the direct media/large-file streaming path                  |
+| `MITM_DEBUG`                       | `false`                      | Log one line per proxied request (errors are always logged)                             |
 
 Upgrading from an earlier release requires renaming several environment variables. See the
 [configuration migration guide](apps/docs/deployment/configuration-migration.md) for the complete
@@ -467,6 +467,22 @@ Node/Express baggage.
 | Session cache | Redis 8.8                          |
 | Landing page  | Nuxt 4                             |
 | Documentation | VitePress                          |
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=germondai%2Ftrawl">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=germondai/trawl&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=germondai/trawl&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=germondai/trawl&type=date&legend=top-left" />
+ </picture>
+</a>
+
+## Contributors
+
+<a href="https://github.com/germondai/trawl/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=germondai/trawl" />
+</a>
 
 ## License
 
